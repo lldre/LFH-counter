@@ -27,7 +27,7 @@ When an allocation is made `RtlpAllocateHeap()` decides on if it should use the 
 * Checks if the bit corresponding to the \$index is set in the `_HEAP->FrontEndHeapStatusBitmap` using the following calculation `FrontEndHeapStatusBitmap[$index >> 3] & (1 << ($index & 7))`. This bit, if set, indicates that the LFH is active for the bucket of that size.
 * If the LFH is not yet active for that size it reads out `_HEAP->FrontEndHeapUsageData` and increments it by `0x21` (this is the counter mechanism).
 * Right after incrementing it, it will bitwise AND the value to get the lowest 31 bits and check if the resulting value exceeds `0x10`
-* It will then proceed to check the `_HEAP->FrontEndHeapType` for the value `2 (SEGMENT_HEAP)`. If that check is true it will load the pointer in `_HEAP->FrontEndHeap` (Which points to the LFH allocator perhaps) and pass it to `RtlpGetLFHContext`. If it's 0, the LFH isn't active for that heap and it will proceed to allocate it normally.
+* It will then proceed to check the `_HEAP->FrontEndHeapType` for the value `2 (LFH_HEAP)`. If that check is true it will load the pointer in `_HEAP->FrontEndHeap` (Which points to the LFH allocation, perhaps) and pass it to `RtlpGetLFHContext`. If it's 0, the LFH isn't active for that heap and it will proceed to allocate it normally.
 * If the LFH is available, it will set the corresponding bit inside the bitfield `_HEAP->FrontEndHeapStatusBitmap` that we calculated earlier, indicating an LFH has been created for that bucket.
 * The last step is incrementing the `_HEAP->_HEAP_COUNTERS.AllocationIndicesActive` value.
 * The next allocation of this size will be allocated in the LFH (allocation 18)
